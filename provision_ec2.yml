@@ -10,7 +10,7 @@
     key_name: "workshop-recife"
     vpc_subnet_id: "subnet-0cfe9f89a482437a2"
     security_group_id: "sg-0ebaef3d4e40d80dc"
-    amount: 1 # Quantidade padrão de máquinas
+    amount: 12 # Quantidade padrão de máquinas
     inventory_file: "inventory_output.ini"
 
   tasks:
