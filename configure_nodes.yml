@@ -1,0 +1,53 @@
+---
+- name: Configurar nós do workshop
+  hosts: all
+  become: true
+  gather_facts: true
+
+  tasks:
+    - name: Criar usuário openshift
+      ansible.builtin.user:
+        name: openshift
+        password: "$6$7TPfI8Ao.TdeXDh3$mUId7Oa2M5aHoQd1uoMOtxm2p0Dxi.H4EWY13vKMCdqWvN8nQ9LmMoD1b6TFVQ0IqhWYiVjV9sttdDl1KtYAT/"
+        shell: /bin/bash
+        groups: wheel
+        append: true
+        state: present
+
+    - name: Permitir sudo sem senha para o usuário openshift
+      ansible.builtin.copy:
+        content: "openshift ALL=(ALL) NOPASSWD: ALL"
+        dest: /etc/sudoers.d/openshift
+        mode: '0440'
+        validate: 'visudo -cf %s'
+
+    - name: Habilitar autenticação por senha no SSH
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+        state: present
+      notify: Reiniciar sshd
+
+    - name: Habilitar autenticação por senha no cloud-init config (se existir)
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config.d/50-cloud-init.conf
+        regexp: '^PasswordAuthentication'
+        line: 'PasswordAuthentication yes'
+        state: present
+      failed_when: false
+      notify: Reiniciar sshd
+
+    - name: Garantir que ChallengeResponseAuthentication esteja habilitado (opcional, para alguns sistemas)
+      ansible.builtin.lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?ChallengeResponseAuthentication'
+        line: 'ChallengeResponseAuthentication yes'
+        state: present
+      notify: Reiniciar sshd
+
+  handlers:
+    - name: Reiniciar sshd
+      ansible.builtin.service:
+        name: sshd
+        state: restarted

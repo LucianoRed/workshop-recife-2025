@@ -1,0 +1,57 @@
+---
+- name: Provisionar Instâncias EC2 na AWS
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    aws_region: "us-east-2"
+    image_id: "ami-0912d5cf1d5dff99c"
+    instance_type: "t2.small" # Tipo padrão, pode ser alterado
+    key_name: "workshop-recife"
+    vpc_subnet_id: "subnet-0cfe9f89a482437a2"
+    security_group_id: "sg-0ebaef3d4e40d80dc"
+    amount: 1 # Quantidade padrão de máquinas
+    inventory_file: "inventory_output.ini"
+
+  tasks:
+    - name: Criar instâncias EC2
+      amazon.aws.ec2_instance:
+        region: "{{ aws_region }}"
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ image_id }}"
+        vpc_subnet_id: "{{ vpc_subnet_id }}"
+        security_group: "{{ security_group_id }}"
+        network:
+          assign_public_ip: true
+        volumes:
+          - device_name: /dev/sda1
+            ebs:
+              volume_size: 50
+              delete_on_termination: true
+              volume_type: gp3
+        wait: true
+        count: "{{ amount }}"
+        tags:
+          Name: "Workshop-Recife-Node"
+          Environment: "Workshop"
+      register: ec2_result
+
+    - name: Exibir IPs Públicos
+      debug:
+        msg: "Instância criada: {{ item.public_ip_address }}"
+      loop: "{{ ec2_result.instances }}"
+
+    - name: Criar arquivo de inventário com IPs públicos
+      copy:
+        content: |
+          [workshop_nodes]
+          {% for instance in ec2_result.instances %}
+          {{ instance.public_ip_address }} ansible_user=ec2-user ansible_ssh_private_key_file={{ key_name }}.pem
+          {% endfor %}
+        dest: "{{ inventory_file }}"
+      when: ec2_result.instances | length > 0
+
+    - name: Mensagem final
+      debug:
+        msg: "Inventário gerado em {{ inventory_file }} com {{ ec2_result.instances | length }} hosts."
