@@ -56,6 +56,15 @@
 <body>
 
   <h1>Laboratório Docker + PHP – 5 Exercícios</h1>
+
+  <div class="secao" style="background-color: #fff3cd; padding: 15px; border-left: 5px solid #ffc107;">
+    <h3>⚠️ Pré-requisitos</h3>
+    <p>Antes de começar, certifique-se de que o Docker ou Podman está rodando.</p>
+    <ul>
+      <li><strong>Docker Desktop:</strong> Abra o aplicativo Docker Desktop e aguarde o ícone ficar verde/estável.</li>
+      <li><strong>Podman:</strong> Se estiver usando Podman Machine, inicie com <code>podman machine start</code>.</li>
+    </ul>
+  </div>
   
   <div class="secao" style="background-color: #eef; padding: 15px; border-left: 5px solid #0078d4;">
     <h3>🖥️ Instruções para Windows</h3>
@@ -106,14 +115,18 @@
 
     <h3>Resolução</h3>
 
-    <p><strong>Arquivos em <code>ex1/</code>:</strong></p>
+    <p><strong>1. Preparando a pasta:</strong></p>
+    <pre><code class="language-bash">mkdir ex1
+cd ex1</code></pre>
 
-    <p><strong><code>app.php</code></strong></p>
+    <p><strong>2. Criando os arquivos:</strong></p>
+
+    <p>Crie o arquivo <strong><code>app.php</code></strong> com o seguinte conteúdo:</p>
     <pre><code class="language-php">&lt;?php
 echo "Hello from Docker/Podman!\n";
 </code></pre>
 
-    <p><strong><code>Dockerfile</code></strong></p>
+    <p>Crie o arquivo <strong><code>Dockerfile</code></strong> com o seguinte conteúdo:</p>
     <pre><code class="language-dockerfile">FROM php:8.2-cli
 
 WORKDIR /app
@@ -123,7 +136,7 @@ COPY app.php /app/app.php
 CMD ["php", "/app/app.php"]
 </code></pre>
 
-    <p><strong>Build da imagem</strong> (no diretório <code>ex1/</code>):</p>
+    <p><strong>3. Build da imagem</strong> (no diretório <code>ex1/</code>):</p>
 
     <p><span class="tag">Docker</span></p>
     <pre><code class="language-bash">docker build -t php-hello-ex1 .</code></pre>
@@ -166,15 +179,27 @@ CMD ["php", "/app/app.php"]
 
     <h3>Resolução</h3>
 
-    <p><strong>Arquivos em <code>ex2/</code>:</strong></p>
+    <p><strong>1. Preparando a pasta (copiando do ex1):</strong></p>
+    
+    <p><span class="tag">Windows (CMD)</span></p>
+    <pre><code class="language-cmd">cd ..
+xcopy /E /I ex1 ex2
+cd ex2</code></pre>
 
-    <p><strong><code>app.php</code></strong></p>
+    <p><span class="tag">Linux / Mac</span></p>
+    <pre><code class="language-bash">cd ..
+cp -r ex1 ex2
+cd ex2</code></pre>
+
+    <p><strong>2. Editando os arquivos:</strong></p>
+
+    <p>Edite o arquivo <strong><code>app.php</code></strong> para ficar assim:</p>
     <pre><code class="language-php">&lt;?php
 $appName = getenv('APP_NAME') ?: 'DefaultApp';
 echo "Hello from {$appName}!\n";
 </code></pre>
 
-    <p><strong><code>Dockerfile</code></strong> (igual ao do exercício 1)</p>
+    <p><strong><code>Dockerfile</code></strong> (mantenha igual ao do exercício 1)</p>
     <pre><code class="language-dockerfile">FROM php:8.2-cli
 
 WORKDIR /app
@@ -184,7 +209,7 @@ COPY app.php /app/app.php
 CMD ["php", "/app/app.php"]
 </code></pre>
 
-    <p><strong>Build da imagem</strong> (no diretório <code>ex2/</code>):</p>
+    <p><strong>3. Build da imagem</strong> (no diretório <code>ex2/</code>):</p>
 
     <p><span class="tag">Docker</span></p>
     <pre><code class="language-bash">docker build -t php-env-ex2 .</code></pre>
@@ -237,9 +262,14 @@ CMD ["php", "/app/app.php"]
 
     <h3>Resolução</h3>
 
-    <p><strong>Arquivos em <code>ex3/</code>:</strong></p>
+    <p><strong>1. Preparando a pasta:</strong></p>
+    <pre><code class="language-bash">cd ..
+mkdir ex3
+cd ex3</code></pre>
 
-    <p><strong><code>index.php</code></strong></p>
+    <p><strong>2. Criando os arquivos:</strong></p>
+
+    <p>Crie o arquivo <strong><code>index.php</code></strong>:</p>
     <pre><code class="language-php">&lt;?php
 echo "&lt;h1&gt;Bem-vindo ao meu container PHP!&lt;/h1&gt;";
 echo "&lt;p&gt;Se você está vendo isso, o Apache + PHP dentro do container está funcionando.&lt;/p&gt;";
@@ -247,7 +277,7 @@ echo "&lt;p&gt;Se você está vendo isso, o Apache + PHP dentro do container est
 // phpinfo();
 </code></pre>
 
-    <p><strong><code>Dockerfile</code></strong></p>
+    <p>Crie o arquivo <strong><code>Dockerfile</code></strong>:</p>
     <pre><code class="language-dockerfile">FROM php:8.2-apache
 
 # Ativa o mod_rewrite (opcional, útil para apps futuras):
@@ -259,7 +289,7 @@ COPY index.php /var/www/html/index.php
 EXPOSE 80
 </code></pre>
 
-    <p><strong>Build da imagem</strong> (no diretório <code>ex3/</code>):</p>
+    <p><strong>3. Build da imagem</strong> (no diretório <code>ex3/</code>):</p>
 
     <p><span class="tag">Docker</span></p>
     <pre><code class="language-bash">docker build -t php-apache-ex3 .</code></pre>
@@ -302,15 +332,21 @@ EXPOSE 80
 
     <h3>Resolução</h3>
 
-    <p><strong>Arquivos em <code>ex4/src/</code>:</strong></p>
+    <p><strong>1. Preparando as pastas:</strong></p>
+    <pre><code class="language-bash">cd ..
+mkdir ex4
+cd ex4
+mkdir src</code></pre>
 
-    <p><strong><code>index.php</code></strong></p>
+    <p><strong>2. Criando o arquivo:</strong></p>
+
+    <p>Crie o arquivo <strong><code>src/index.php</code></strong> (atenção para a pasta src):</p>
     <pre><code class="language-php">&lt;?php
 echo "&lt;h1&gt;Meu app PHP em bind mount&lt;/h1&gt;";
 echo "&lt;p&gt;Versão 1&lt;/p&gt;";
 </code></pre>
 
-    <p><strong>Rodando o container com bind mount</strong> (no diretório <code>ex4/</code>):</p>
+    <p><strong>3. Rodando o container com bind mount</strong> (no diretório <code>ex4/</code>):</p>
 
     <p><span class="tag">Linux / Mac / PowerShell</span></p>
     <pre><code class="language-bash">docker run --rm \
@@ -381,9 +417,14 @@ echo "&lt;p&gt;Versão 2 - modificado sem rebuild!&lt;/p&gt;";
 
     <h3>Resolução</h3>
 
-    <p><strong>Arquivos em <code>ex5/</code>:</strong></p>
+    <p><strong>1. Preparando a pasta:</strong></p>
+    <pre><code class="language-bash">cd ..
+mkdir ex5
+cd ex5</code></pre>
 
-    <p><strong><code>index.php</code></strong></p>
+    <p><strong>2. Criando os arquivos:</strong></p>
+
+    <p>Crie o arquivo <strong><code>index.php</code></strong>:</p>
     <pre><code class="language-php">&lt;?php
 $arquivo = __DIR__ . '/contador.txt';
 
@@ -406,7 +447,7 @@ echo "&lt;h1&gt;Bem-vindo ao meu app PHP com contador!&lt;/h1&gt;";
 echo "&lt;p&gt;Esta página já foi acessada &lt;strong&gt;{$visitas}&lt;/strong&gt; vezes.&lt;/p&gt;";
 </code></pre>
 
-    <p><strong><code>Dockerfile</code></strong></p>
+    <p>Crie o arquivo <strong><code>Dockerfile</code></strong>:</p>
     <pre><code class="language-dockerfile">FROM php:8.2-apache
 
 # Diretório de trabalho
@@ -422,7 +463,7 @@ RUN chown -R www-data:www-data /var/www/html \
 EXPOSE 80
 </code></pre>
 
-    <p><strong>Build da imagem</strong> (no diretório <code>ex5/</code>):</p>
+    <p><strong>3. Build da imagem</strong> (no diretório <code>ex5/</code>):</p>
 
     <p><span class="tag">Docker</span></p>
     <pre><code class="language-bash">docker build -t php-contador-ex5 .</code></pre>
